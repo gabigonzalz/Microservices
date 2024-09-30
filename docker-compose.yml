@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  auth-service:
+    build:
+      context: ./auth-service
+    container_name: auth-service
+    ports:
+      - "5001:5001"
+    environment:
+      - FLASK_APP=main.py
+      - FLASK_ENV=development
+      - JWT_SECRET_KEY=your_super_secret_key
+    depends_on:
+      - db_auth
+    networks:
+      - app-network
+
+  password-service:
+    build:
+      context: ./password-service
+    container_name: password-service
+    ports:
+      - "5002:5002"
+    environment:
+      - FLASK_APP=main.py
+      - FLASK_ENV=development
+      - JWT_SECRET_KEY=your_super_secret_key
+    depends_on:
+      - db_password
+      - auth-service
+    networks:
+      - app-network
+
+  # Auth database (SQLite can be replaced with other DB)
+  db_auth:
+    image: postgres:13
+    container_name: db_auth
+    environment:
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth_password
+      POSTGRES_DB: auth_db
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  # Password database
+  db_password:
+    image: postgres:13
+    container_name: db_password
+    environment:
+      POSTGRES_USER: password_user
+      POSTGRES_PASSWORD: password_password
+      POSTGRES_DB: password_db
+    volumes:
+      - password_db_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  auth_db_data:
+  password_db_data:
