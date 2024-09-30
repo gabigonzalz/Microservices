@@ -1,0 +1,61 @@
+CURL COMMANDS TO TEST THE API REST FUNCTIONALITIES
+(Remember to check the ports and get a new token each batch of tests)
+
+AUTH MICROSERVICE
+
+1. Register a new user:
+
+curl -X POST http://localhost:5001/register \
+     -H "Content-Type: application/json" \
+     -d '{"username": "testuser1", "password": "testpass"}'
+
+2. Login:
+
+curl -X POST http://localhost:5001/login \
+     -H "Content-Type: application/json" \
+     -d '{"username": "testuser1", "password": "testpass"}'
+
+3. Health Check:
+
+curl -X GET http://localhost:5001/health
+
+
+PASSWORD MICROSERVICE
+
+1. Add a New Password
+
+curl -X POST http://localhost:5002/new_password \
+     -H "Authorization: Bearer <your_token>" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "service": "example_service",
+           "password": "example_password"
+         }'
+
+2. Modify an Existing Password
+
+curl -X POST http://localhost:5002/modify_password \
+     -H "Authorization: Bearer <your_token>" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "service": "example_service",
+           "new_password": "new_example_password"
+         }'
+
+3. Delete a Password
+
+curl -X DELETE http://localhost:5002/delete_password \
+     -H "Authorization: Bearer <your_token>" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "service": "example_service"
+         }'
+
+4. List All Passwords
+
+curl -X GET http://localhost:5002/list_passwords \
+     -H "Authorization: Bearer <your_token>"
+
+5. Health Check
+
+curl -X GET http://localhost:5002/health

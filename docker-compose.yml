@@ -4,7 +4,7 @@ services:
   auth-service:
     build:
       context: ./auth-service
-    container_name: auth-service
+    container_name: auth-service-new
     ports:
       - "5001:5001"
     environment:
@@ -19,7 +19,7 @@ services:
   password-service:
     build:
       context: ./password-service
-    container_name: password-service
+    container_name: password-service-new
     ports:
       - "5002:5002"
     environment:
@@ -35,7 +35,7 @@ services:
   # Auth database (SQLite can be replaced with other DB)
   db_auth:
     image: postgres:13
-    container_name: db_auth
+    container_name: db_auth_new
     environment:
       POSTGRES_USER: auth_user
       POSTGRES_PASSWORD: auth_password
@@ -48,7 +48,7 @@ services:
   # Password database
   db_password:
     image: postgres:13
-    container_name: db_password
+    container_name: db_password_new
     environment:
       POSTGRES_USER: password_user
       POSTGRES_PASSWORD: password_password

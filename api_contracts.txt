@@ -1,0 +1,58 @@
+Auth Service
+
+Register a new user
+POST /register
+Payload: { "username": "string", "password": "string" }
+Response Codes:
+201: User created successfully
+400: Invalid input
+
+Login User
+POST /login
+Payload: { "username": "string", "password": "string" }
+Response Codes:
+200: Login successful (includes token)
+401: Invalid username or password
+400: Invalid input
+
+
+Password Service
+
+Create a new password
+POST /new_password
+Authorization: Bearer token (JWT)
+Payload: { "service": "string", "password": "string" }
+Response Codes:
+201: Password added successfully
+401: Unauthorized (Invalid token)
+400: Invalid input
+500: Internal server error
+
+Modify Password
+POST /modify_password
+Authorization: Bearer token (JWT)
+Payload: { "service": "string", "new_password": "string" }
+Response Codes:
+200: Password updated successfully
+404: Password not found
+401: Unauthorized (Invalid token)
+400: Invalid input
+500: Internal server error
+
+Delete password
+DELETE /delete_password
+Authorization: Bearer token (JWT)
+Payload: { "service": "service_name" }
+Response Codes:
+200: Password deleted successfully
+404: Password not found
+401: Unauthorized
+400: Invalid input
+
+List Passwords
+GET /list_passwords
+Authorization: Bearer token (JWT)
+Response Codes:
+200: Success (list of passwords)
+401: Unauthorized (Invalid token)
+500: Internal server error
