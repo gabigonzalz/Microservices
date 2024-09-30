@@ -4,6 +4,7 @@ from .config import Config
 from .models import db
 
 def create_app():
+    # Flask settings
     app = Flask(__name__)
     app.config.from_object(Config)
     app.debug = True

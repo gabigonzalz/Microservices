@@ -21,13 +21,16 @@ def retry(func, retries=3, delay=2):
 @password_blueprint.route('/new_password', methods=['POST'])
 def new_password():
     user_id = get_user_id_from_token()
+    # Check for the JWT token
     if not user_id:
         return jsonify({'message': 'Unauthorized'}), 401
 
     data = request.get_json()
+    # Check for correct user input
     if not data or not data.get('service') or not data.get('password'):
         return jsonify({'message': 'Invalid input'}), 400
 
+    # New password entry into the database
     def create_password_entry():
         new_entry = Password(user_id=user_id, service=data['service'])
         new_entry.set_password(data['password'])  # Set the hashed password
@@ -44,13 +47,16 @@ def new_password():
 @password_blueprint.route('/modify_password', methods=['POST'])
 def modify_password():
     user_id = get_user_id_from_token()
+    # Check for the JWT token
     if not user_id:
         return jsonify({'message': 'Unauthorized'}), 401
 
     data = request.get_json()
+    # Check for correct user input
     if not data or not data.get('service') or not data.get('new_password'):
         return jsonify({'message': 'Invalid input'}), 400
 
+    # Modify password entry in the database
     def modify_password_entry():
         modify_entry = Password.query.filter_by(user_id=user_id, service=data['service']).first()
         if modify_entry:
@@ -60,7 +66,7 @@ def modify_password():
         else:
             return False
 
-    try:
+    try: # Try to modify the database entry
         if retry(modify_password_entry):
             return jsonify({'message': 'Password updated successfully'}), 200
         else:
@@ -72,13 +78,16 @@ def modify_password():
 @password_blueprint.route('/delete_password', methods=['DELETE'])
 def delete_password():
     user_id = get_user_id_from_token()
+    # Check for the JWT token
     if not user_id:
         return jsonify({'message': 'Unauthorized'}), 401
 
     data = request.get_json()
+    # Check for correct user input
     if not data or not data.get('service'):
         return jsonify({'message': 'Invalid input'}), 400
 
+    # Delete password entry from the database
     def delete_password_entry():
         delete_entry = Password.query.filter_by(user_id=user_id, service=data['service']).first()
         if delete_entry:
@@ -88,7 +97,7 @@ def delete_password():
         else:
             return False
 
-    try:
+    try: # Try to delete the database entry
         if retry(delete_password_entry):
             return jsonify({'message': 'Password deleted successfully'}), 200
         else:
@@ -100,13 +109,15 @@ def delete_password():
 @password_blueprint.route('/list_passwords', methods=['GET'])
 def list_passwords():
     user_id = get_user_id_from_token()
+    # Check for the JWT token
     if not user_id:
         return jsonify({'message': 'Unauthorized'}), 401
 
+    # Get all the passwords of the user from the database
     def fetch_passwords():
         return Password.query.filter_by(user_id=user_id).all()
 
-    try:
+    try: # Try to get all the passwords and present them
         passwords = retry(fetch_passwords)
         return jsonify([
             {'service': p.service, 'hashed_password': '***'}  # Masking password for security

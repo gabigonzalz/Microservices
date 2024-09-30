@@ -1,4 +1,3 @@
-from flask import request, jsonify
 import jwt
 from datetime import datetime, timedelta
 import os  # Import os to use environment variables
@@ -10,7 +9,7 @@ def generate_token(user_id):
         'user_id': user_id,
         'exp': datetime.utcnow() + timedelta(hours=24)  # Token expires in 24 hours
     }
-    
+    # Try hashing the JWT token
     try:
         token = jwt.encode(payload, secret_key, algorithm='HS256')
         return token

@@ -1,14 +1,15 @@
-from flask import request, jsonify
+from flask import request
 import jwt
 import os  # Import os to use environment variables
 
 def get_user_id_from_token():
+    # Get the authorization from the header
     auth_header = request.headers.get('Authorization')
     if not auth_header:
         return None  # Return None if there's no auth header
     
     try:
-        # Assuming 'Bearer <token>'
+        # Keeping in mind 'Bearer <token>'
         token = auth_header.split(' ')[1]
         secret_key = os.getenv('JWT_SECRET_KEY', 'your_default_secret_key')  # Use the same secret key
         payload = jwt.decode(token, secret_key, algorithms=['HS256'])  # Use the secret key from env variable

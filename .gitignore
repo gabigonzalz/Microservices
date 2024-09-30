@@ -1,1 +1,4 @@
 /.venv
+/.ruff_cache
+/auth-service/app/__pycache__
+/password-service/app/__pycache__

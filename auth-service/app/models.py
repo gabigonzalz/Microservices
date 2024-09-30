@@ -5,8 +5,8 @@ db = SQLAlchemy()
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False, index=True)  # Adding index for efficient querying
-    hashed_password = db.Column(db.String(128), nullable=False)  # Renaming for clarity
+    username = db.Column(db.String(80), unique=True, nullable=False, index=True)  # Username
+    hashed_password = db.Column(db.String(128), nullable=False)  # Hashed password that belongs to the username
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)
