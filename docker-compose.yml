@@ -11,8 +11,9 @@ services:
       - FLASK_APP=main.py
       - FLASK_ENV=development
       - JWT_SECRET_KEY=your_super_secret_key
-    depends_on:
-      - db_auth
+      - DATABASE_URL=sqlite:///app.db  # SQLite connection string
+    volumes:
+      - ./auth-service:/app  # Ensure the app can read/write to the DB file
     networks:
       - app-network
 
@@ -26,42 +27,12 @@ services:
       - FLASK_APP=main.py
       - FLASK_ENV=development
       - JWT_SECRET_KEY=your_super_secret_key
-    depends_on:
-      - db_password
-      - auth-service
-    networks:
-      - app-network
-
-  # Auth database (SQLite can be replaced with other DB)
-  db_auth:
-    image: postgres:13
-    container_name: db_auth_new
-    environment:
-      POSTGRES_USER: auth_user
-      POSTGRES_PASSWORD: auth_password
-      POSTGRES_DB: auth_db
+      - DATABASE_URL=sqlite:///app.db  # SQLite connection string
     volumes:
-      - auth_db_data:/var/lib/postgresql/data
-    networks:
-      - app-network
-
-  # Password database
-  db_password:
-    image: postgres:13
-    container_name: db_password_new
-    environment:
-      POSTGRES_USER: password_user
-      POSTGRES_PASSWORD: password_password
-      POSTGRES_DB: password_db
-    volumes:
-      - password_db_data:/var/lib/postgresql/data
+      - ./password-service:/app  # Ensure the app can read/write to the DB file
     networks:
       - app-network
 
 networks:
   app-network:
     driver: bridge
-
-volumes:
-  auth_db_data:
-  password_db_data:
