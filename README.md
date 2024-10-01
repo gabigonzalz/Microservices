@@ -1,4 +1,4 @@
-# Microservices: a Password Management System
+# Microservices: a Password Management System 🔐
 
 This project implements a secure, scalable password management system using a microservices architecture. It provides users with a centralized platform to store, manage, and access their passwords while ensuring robust authentication and authorization mechanisms.
 
