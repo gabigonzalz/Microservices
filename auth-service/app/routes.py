@@ -6,6 +6,9 @@ from .utils import generate_token
 
 auth_blueprint = Blueprint('auth', __name__)
 
+# Create a circuit breaker
+breaker = pybreaker.CircuitBreaker(fail_max=3, reset_timeout=60)
+
 # Function to handle retries
 def retry_request(func, retries=3, *args, **kwargs):
     attempt = 0
@@ -22,6 +25,7 @@ def retry_request(func, retries=3, *args, **kwargs):
 
 # Register a new user (POST request)
 @auth_blueprint.route('/register', methods=['POST'])
+@breaker
 def register():
     data = request.get_json()
     # Check for correct user input
@@ -41,6 +45,8 @@ def register():
     def commit_user():
         db.session.add(new_user)
         db.session.commit()
+         # Async publish after user creation
+        asyncio.run(publish_message("auth-service.user.created", new_user.username))
         return jsonify({'message': 'User created successfully'}), 201
 
     # Try to commit the new user to the database
@@ -48,6 +54,7 @@ def register():
 
 # Login a user (POST request)
 @auth_blueprint.route('/login', methods=['POST'])
+@breaker
 def login():
     data = request.get_json()
     # Check for correct user input
@@ -61,6 +68,8 @@ def login():
         token = generate_token(user.id) # Generate session token
 
         def success_response():
+            # Async publish after user login
+            asyncio.run(publish_message("auth-service.user.loggedin", user.username))
             return jsonify({'message': 'Login successful', 'token': token}), 200
 
         # Add retries in case of issues generating the token
