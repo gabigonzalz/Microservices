@@ -8,12 +8,15 @@ services:
     ports:
       - "5001:5001"
     environment:
-      - FLASK_APP=main.py
-      - FLASK_ENV=development
-      - JWT_SECRET_KEY=your_super_secret_key
+      - FLASK_APP=main.py # States app's build location
+      - FLASK_ENV=development # Development mode
+      - JWT_SECRET_KEY=your_super_secret_key # Secret Key config
       - DATABASE_URL=sqlite:///app.db  # SQLite connection string
+      - NATS_URL=nats://nats:4222 # Nats connection
     volumes:
-      - ./auth-service:/app  # Ensure the app can read/write to the DB file
+      - ./auth-service:/app # Ensure the app can read/write to the DB file
+    depends_on:
+      - nats # Ensures Nats starts first
     networks:
       - app-network
 
@@ -27,12 +30,23 @@ services:
       - FLASK_APP=main.py
       - FLASK_ENV=development
       - JWT_SECRET_KEY=your_super_secret_key
-      - DATABASE_URL=sqlite:///app.db  # SQLite connection string
+      - DATABASE_URL=sqlite:///app.db
+      - NATS_URL=nats://nats:4222
     volumes:
-      - ./password-service:/app  # Ensure the app can read/write to the DB file
+      - ./password-service:/app
+    depends_on:
+      - nats
     networks:
       - app-network
 
+  nats:
+      image: nats:latest
+      ports:
+        - "4222:4222"  # Default port for NATS clients
+        - "8222:8222"  # Monitoring interface
+      networks:
+      - app-network
+
 networks:
-  app-network:
+  app-network: # Configure the app's network connection
     driver: bridge
