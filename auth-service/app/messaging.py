@@ -15,8 +15,11 @@ async def connect_to_nats():
 async def publish_message(subject, message):
     if not nats_client.is_connected:
         await connect_to_nats()
-    await nats_client.publish(subject, message.encode())
-    await nats_client.flush()
+    try:
+        await nats_client.publish(subject, message.encode(), timeout=5)
+        await nats_client.flush()
+    except Exception as e:
+        print(f"Failed to publish message: {str(e)}")
 
 # Close the NATS connection
 async def close_nats():
