@@ -1,10 +1,13 @@
-# app/routes.py
+import time
+import pybreaker
 from flask import Blueprint, request, jsonify
 from .models import db, Password
 from .utils import get_user_id_from_token
-import time
 
 password_blueprint = Blueprint('password', __name__)
+
+# Create a circuit breaker
+breaker = pybreaker.CircuitBreaker(fail_max=3, reset_timeout=60)
 
 # Utility function for retries
 def retry(func, retries=3, delay=2):
@@ -19,6 +22,7 @@ def retry(func, retries=3, delay=2):
 
 # Add a new password (POST request)
 @password_blueprint.route('/new_password', methods=['POST'])
+@breaker
 def new_password():
     user_id = get_user_id_from_token()
     # Check for the JWT token
@@ -45,6 +49,7 @@ def new_password():
 
 # Modify a password (POST request)
 @password_blueprint.route('/modify_password', methods=['POST'])
+@breaker
 def modify_password():
     user_id = get_user_id_from_token()
     # Check for the JWT token
@@ -76,6 +81,7 @@ def modify_password():
 
 # Delete a password (DELETE request)
 @password_blueprint.route('/delete_password', methods=['DELETE'])
+@breaker
 def delete_password():
     user_id = get_user_id_from_token()
     # Check for the JWT token
@@ -107,6 +113,7 @@ def delete_password():
 
 # List all passwords (GET request)
 @password_blueprint.route('/list_passwords', methods=['GET'])
+@breaker
 def list_passwords():
     user_id = get_user_id_from_token()
     # Check for the JWT token
